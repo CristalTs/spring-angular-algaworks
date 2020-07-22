@@ -17,35 +17,36 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.algamoney.api.event.RecursoCriadoEvent;
-import com.example.algamoney.api.model.Categoria;
-import com.example.algamoney.api.repository.CategoriaRepository;
+import com.example.algamoney.api.model.Pessoa;
+import com.example.algamoney.api.repository.PessoaRepository;
 
 @RestController
-@RequestMapping("/categorias")
-public class CategoriaResource {
+@RequestMapping("/pessoas")
+public class PessoaResource {
 
     @Autowired
-    private CategoriaRepository categoriaRepository;
+    private PessoaRepository pessoaRepository;
 
     @Autowired
     private ApplicationEventPublisher publisher;
 
     @GetMapping
-    public List<Categoria> listar() {
-        return this.categoriaRepository.findAll();
+    public List<Pessoa> listarPessoas() {
+        return this.pessoaRepository.findAll();
+
     }
 
     @PostMapping
-    public ResponseEntity<Categoria> criar(@Valid @RequestBody Categoria categoria, HttpServletResponse response) {
-        final Categoria categoriaSalva = this.categoriaRepository.save(categoria);
-        this.publisher.publishEvent(new RecursoCriadoEvent(this, response, categoriaSalva.getCodigo()));
+    public ResponseEntity<Pessoa> criar(@Valid @RequestBody Pessoa pessoa, HttpServletResponse response) {
+        final Pessoa pessoasalva = this.pessoaRepository.save(pessoa);
+        this.publisher.publishEvent(new RecursoCriadoEvent(this, response, pessoasalva.getCodigo()));
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(categoriaSalva);
+        return ResponseEntity.status(HttpStatus.CREATED).body(pessoasalva);
     }
 
     @GetMapping("/{codigo}")
-    public ResponseEntity<Categoria> bucarPeloCodigo(@PathVariable Long codigo) {
-        return this.categoriaRepository.findById(codigo).map(categoria -> ResponseEntity.ok(categoria))
+    public ResponseEntity<Pessoa> bucarPeloCodigo(@PathVariable Long codigo) {
+        return this.pessoaRepository.findById(codigo).map(pessoa -> ResponseEntity.ok(pessoa))
                 .orElse(ResponseEntity.notFound().build());
     }
 
