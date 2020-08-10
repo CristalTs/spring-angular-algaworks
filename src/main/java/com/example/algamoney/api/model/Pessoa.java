@@ -50,7 +50,7 @@ public class Pessoa {
         return this.endereco;
     }
 
-    public void setEndreco(Endereco endereco) {
+    public void setEndereco(Endereco endereco) {
         this.endereco = endereco;
     }
 
