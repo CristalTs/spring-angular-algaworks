@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
@@ -19,12 +20,15 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private UserDetailsService userDetailsService;
+
     // configurando acesso do(s) cliente(s) ao servidor de autenticação
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.inMemory()
                 .withClient("angular") // nome do cliente
-                .secret("@ngul@r0") // senha de acesso cliente
+                .secret("$2a$10$n3SMkZmWmEBgbSn1O88hh.nTslaeO/HvkK23FvKIbqfUYOlC1Jv.m") // senha de acesso cliente
                 .scopes("read", "write") // escopo das permissões do clientes
                 .authorizedGrantTypes("password", "refresh_token") // tipo de grand type do auth2 que será usado
                 .accessTokenValiditySeconds(20)
@@ -38,6 +42,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .tokenStore(this.tokenStore()) // onde será armazenado o token retornado ao cliente
                 .accessTokenConverter(this.accessTokenConverter())
                 .reuseRefreshTokens(false)
+                .userDetailsService(this.userDetailsService)
                 .authenticationManager(this.authenticationManager);
     }
 
