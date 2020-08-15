@@ -31,7 +31,14 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .secret("$2a$10$n3SMkZmWmEBgbSn1O88hh.nTslaeO/HvkK23FvKIbqfUYOlC1Jv.m") // senha de acesso cliente
                 .scopes("read", "write") // escopo das permissões do clientes
                 .authorizedGrantTypes("password", "refresh_token") // tipo de grand type do auth2 que será usado
-                .accessTokenValiditySeconds(20)
+                .accessTokenValiditySeconds(1800)
+                .refreshTokenValiditySeconds(3600 * 24)
+                .and()
+                .withClient("mobile")
+                .secret("m0b1l30")
+                .scopes("read")
+                .authorizedGrantTypes("password", "refresh_token")
+                .accessTokenValiditySeconds(1800)
                 .refreshTokenValiditySeconds(3600 * 24);
 
     }
