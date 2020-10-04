@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -32,7 +33,7 @@ import com.example.algamoney.api.repository.LancamentoRepository;
 import com.example.algamoney.api.repository.filter.LancamentoFilter;
 import com.example.algamoney.api.repository.projections.ResumoLancamento;
 import com.example.algamoney.api.service.LancamentoService;
-import com.example.algamoney.api.service.exception.PessoaInexistenteOuInativiException;
+import com.example.algamoney.api.service.exception.PessoaInexistenteOuInativaException;
 
 @RestController
 @RequestMapping("/lancamentos")
@@ -85,8 +86,19 @@ public class LancamentoResource {
         this.lancamentoRepository.deleteById(codigo);
     }
 
-    @ExceptionHandler({ PessoaInexistenteOuInativiException.class })
-    public ResponseEntity<Object> handlePessoaInexistenteOuInativiexception(PessoaInexistenteOuInativiException ex) {
+    @PutMapping("/{codigo}")
+    @PreAuthorize("hasAuthority('ROLE_CADASTRAR_LANCAMENTO')")
+    public ResponseEntity<Lancamento> atualizar(@PathVariable Long codigo, @Valid @RequestBody Lancamento lancamento) {
+        try {
+            final Lancamento lancamentoSalvo = this.lancamentoService.atualizar(codigo, lancamento);
+            return ResponseEntity.ok(lancamentoSalvo);
+        } catch (final IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @ExceptionHandler({ PessoaInexistenteOuInativaException.class })
+    public ResponseEntity<Object> handlePessoaInexistenteOuInativiexception(PessoaInexistenteOuInativaException ex) {
         final String mensagemUsuario = this.messageSource.getMessage("pessoa.inexistente-ou-inativa", null,
                 LocaleContextHolder.getLocale());
         final String mensagemDesenvolvedor = ex.toString();
